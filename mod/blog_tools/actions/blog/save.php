@@ -41,7 +41,6 @@ if ($guid) {
 	$blog = new ElggBlog();
 	$blog->subtype = 'blog';
 	$blog->container_guid = (int) get_input('container_guid');
-	
 	$new_post = TRUE;
 }
 
@@ -71,6 +70,7 @@ $values = array(
 // fail if a required entity isn't set
 //$required = array('title', 'description');
 $cart = array(); //Create a array to compare if english or french title and description is in.
+
 foreach ($values as $name => $default) {
 
 	 $cart[] = array($name => $values);
@@ -78,12 +78,10 @@ foreach ($values as $name => $default) {
 
 if ($cart['title'] && $cart['title2'] == ''){
 	$error = elgg_echo("blog:error:missing:title");
-
 }
 
 if ($cart['description'] && $cart['description2'] == ''){
 	$error = elgg_echo("blog:error:missing:description");
-
 }
 
 // load from POST and do sanity and access checking
@@ -154,10 +152,12 @@ foreach ($values as $name => $default) {
 if (!$values['title']){
 	$values['title'] = $values['title2'];
 }
+
 //implode for tranlation
 $values['title3'] = gc_implode_translation($values['title'], $values['title2']);
 $values['excerpt3'] = gc_implode_translation($values['excerpt'], $values['excerpt2']);
 $values['description3'] =gc_implode_translation($values['description'], $values['description2']);
+
 // if preview, force status to be draft
 if ($save == false) {
 	$values['status'] = 'draft';
@@ -190,7 +190,6 @@ if (!$error) {
 			if (!empty($icon_file) && !empty($icon_sizes)) {
 				// create icon
 				$prefix = "blogs/" . $blog->getGUID();
-				
 				$fh = new ElggFile();
 				$fh->owner_guid = $blog->getOwnerGUID();
 				
@@ -225,7 +224,6 @@ if (!$error) {
 		}
 
 		system_message(elgg_echo('blog:message:saved'));
-
 		$status = $blog->status;
 		
 		// add to river if changing status or published, regardless of new post

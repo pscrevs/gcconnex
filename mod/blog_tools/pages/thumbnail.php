@@ -70,7 +70,6 @@ if (isset($data_root)) {
 	
 	$locator = new \Elgg\EntityDirLocator($guid);
 	$entity_path = $data_root . $locator->getPath();
-	
 	$filename = $entity_path . "blogs/{$blog_guid}{$size}.jpg";
 	$filecontents = @file_get_contents($filename);
 

@@ -4,7 +4,6 @@
  */
 
 gatekeeper();
-
 elgg_load_library("elgg:blog");
 elgg_require_js('elgg/blog/save_draft');
 
@@ -22,19 +21,16 @@ $vars["id"] = "blog-post-edit";
 $vars["name"] = "blog_post";
 $vars["class"] = "elgg-form-alt";
 $vars["enctype"] = "multipart/form-data";
-
 $sidebar = "";
 
 if ($page_type == "edit") {
 	$blog = get_entity($guid);
-
 	$title = elgg_echo("blog:edit");
 
 	if (elgg_instanceof($blog, "object", "blog") && $blog->canEdit()) {
 		$lang = get_current_language();
 		$vars["entity"] = $blog;
-
-$tilte_blog = gc_explode_translation($blog->title3, $lang);
+		$tilte_blog = gc_explode_translation($blog->title3, $lang);
 		$title .= ": " . $tilte_blog;
 		
 		if ($revision) {
@@ -52,10 +48,8 @@ $tilte_blog = gc_explode_translation($blog->title3, $lang);
 		}
 		
 		$body_vars = blog_prepare_form_vars($blog, $revision);
-		
 		elgg_push_breadcrumb($tilte_blog, $blog->getURL());
 		elgg_push_breadcrumb(elgg_echo("edit"));
-			
 		$content = elgg_view_form("blog/save", $vars, $body_vars);
 		$sidebar = elgg_view("blog/sidebar/revisions", $vars);
 	} else {
@@ -70,7 +64,6 @@ $tilte_blog = gc_explode_translation($blog->title3, $lang);
 
 	elgg_push_breadcrumb(elgg_echo("blog:add"));
 	$body_vars = blog_prepare_form_vars();
-
 	$title = elgg_echo("blog:add");
 	$content = elgg_view_form("blog/save", $vars, $body_vars);
 }
@@ -78,9 +71,7 @@ $tilte_blog = gc_explode_translation($blog->title3, $lang);
 $params["title"] = $title;
 $params["content"] = $content;
 $params["sidebar"] = $sidebar;
-
 $params["sidebar"] .= elgg_view("blog/sidebar", array("page" => $page_type));
-
 $body = elgg_view_layout("content", $params);
 
 echo elgg_view_page($params["title"], $body);

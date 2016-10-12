@@ -16,11 +16,8 @@ $options = array(
 );
 
 $title = elgg_echo("blog_tools:menu:filter:featured");
-
 elgg_push_breadcrumb($title);
-
 elgg_register_title_button();
-
 $list = elgg_list_entities_from_metadata($options);
 if (!$list) {
 	$params["content"] = elgg_echo("blog:none");
@@ -29,7 +26,6 @@ if (!$list) {
 }
 
 $params["sidebar"] = elgg_view("blog/sidebar", array("page" => null));
-
 $body = elgg_view_layout("content", $params);
 
 echo elgg_view_page($title, $body);

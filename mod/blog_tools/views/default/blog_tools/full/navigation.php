@@ -15,7 +15,6 @@ if (elgg_get_plugin_setting("show_full_navigation", "blog_tools") != "yes") {
 }
 
 $entity = elgg_extract("entity", $vars);
-
 $previous_link = "";
 $next_link = "";
 

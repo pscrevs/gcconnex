@@ -7,8 +7,8 @@ $full_view = elgg_extract("full_view", $vars, false);
 if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 	$href = elgg_extract("href", $vars, $entity->getURL());
 	$plugin_settings = elgg_extract("plugin_settings", $vars, false);
-	
 	$class = array("blog_tools_blog_image");
+
 	if (isset($vars["class"])) {
 		$class[] = $vars["class"];
 	}
@@ -40,8 +40,8 @@ if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 			
 			if (!isset($blog_tools_full_image_align)) {
 				$blog_tools_full_image_align = "right";
-				
 				$setting = elgg_get_plugin_setting("full_align", "blog_tools");
+
 				if (!empty($setting)) {
 					$blog_tools_full_image_align = $setting;
 				}
@@ -50,7 +50,6 @@ if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 			if ($blog_tools_full_image_align != "none") {
 				$href = false;
 				$image_params["src"] = $entity->getIconURL($blog_tools_full_image_size);
-				
 				$class[] = "blog-tools-blog-image-" . $blog_tools_full_image_size;
 				
 				if ($blog_tools_full_image_size != "master") {
@@ -72,8 +71,8 @@ if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 			
 			if (!isset($blog_tools_lising_image_size)) {
 				$blog_tools_lising_image_size = "small";
-				
 				$setting = elgg_get_plugin_setting("listing_size", "blog_tools");
+
 				if (!empty($setting)) {
 					$blog_tools_lising_image_size = $setting;
 				}
@@ -81,8 +80,8 @@ if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 			
 			if (!isset($blog_tools_listing_image_align)) {
 				$blog_tools_listing_image_align = "right";
-				
 				$setting = elgg_get_plugin_setting("listing_align", "blog_tools");
+
 				if (!empty($setting)) {
 					$blog_tools_listing_image_align = $setting;
 				}
@@ -90,7 +89,6 @@ if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
 			
 			if ($blog_tools_listing_image_align != "none") {
 				$image_params["src"] = $entity->getIconURL($blog_tools_lising_image_size);
-				
 				$class[] = "blog-tools-blog-image-" . $blog_tools_lising_image_size;
 				
 				if ($blog_tools_listing_image_align == "right") {

@@ -4,7 +4,6 @@
  */
 
 $container_guid = (int) get_input("owner_guid");
-
 $params["filter_context"] = "mine";
 
 $options = array(
@@ -21,9 +20,7 @@ if ($container_guid) {
 
 	$options["owner_guid"] = $container_guid;
 	$container = get_entity($container_guid);
-	
 	$params["title"] = elgg_echo("blog:title:user_blogs", array($container->name));
-
 	elgg_push_breadcrumb($container->name);
 
 	if ($current_user && ($container_guid == $current_user->getGUID())) {
@@ -61,7 +58,6 @@ if (!$list) {
 }
 
 $params["sidebar"] = elgg_view("blog/sidebar", array("page" => $page_type));
-
 $body = elgg_view_layout("content", $params);
 
 echo elgg_view_page($params["title"], $body);

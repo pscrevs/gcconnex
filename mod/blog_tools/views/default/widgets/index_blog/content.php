@@ -60,7 +60,6 @@ if (!empty($blogs)) {
 		echo "<div id='blog_tools_widget_items_container_" . $widget->getGUID() . "' class='blog_tools_widget_items_container'>";
 		echo $blogs;
 		echo "</div>";
-		
 		echo "<div id='blog_tools_widget_items_navigator_" . $widget->getGUID() . "' class='elgg-widget-more blog_tools_widget_items_navigator'>";
 		
 		foreach ($blog_entities as $key => $blog) {

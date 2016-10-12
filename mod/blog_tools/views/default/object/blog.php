@@ -40,7 +40,6 @@ if (elgg_instanceof($container, "group") && ($container->getGUID() !== elgg_get_
 
 $tags = elgg_view('output/tags', array('tags' => $blog->tags));
 $date = elgg_view_friendly_time($blog->time_created);
-
 $info_class = "";
 $blog_icon = "";
 $title = "";
@@ -49,7 +48,6 @@ $title = "";
 if (!empty($blog->icontime)) {
 	$params = $vars;
 	$params["plugin_settings"] = true;
-
 	$blog_icon = elgg_view_entity_icon($blog, "dummy", $params);
 }
 
@@ -115,7 +113,6 @@ if ($full) {
 	} elseif (elgg_get_plugin_setting("listing_strapline", "blog_tools") == "time") {
 		$subtitle = "";
 		$tags = false;
-
 		$excerpt = date("F j, Y", $blog->time_created) . " - " . $excerpt;
 	}
 
@@ -133,7 +130,6 @@ if ($full) {
 	);
 
 	$params = $params + $vars;
-
 	$list_body = elgg_view('object/elements/summary', $params);
 
 	echo elgg_view_image_block($owner_icon, $list_body);

@@ -9,7 +9,6 @@
 
 $entity = elgg_extract("entity", $vars);
 $full_view = elgg_extract("full_view", $vars, false);
-
 $sidebar = false;
 
 if (!empty($entity) && !$full_view) {
@@ -18,7 +17,6 @@ if (!empty($entity) && !$full_view) {
 
 if (empty($entity)) {
 	$guid = (int) get_input("guid");
-	
 	$entity = get_entity($guid);
 	
 	if (!empty($entity) && elgg_instanceof($entity, "object", "blog")) {
@@ -44,7 +42,6 @@ $blogs = blog_tools_get_related_blogs($entity);
 
 if (!empty($blogs)) {
 	$title = elgg_echo("blog_tools:view:related");
-	
 	$icon_size = "medium";
 	$excerpt_length = 120;
 	
@@ -64,7 +61,6 @@ if (!empty($blogs)) {
 		}
 	
 		$blog_excerpt = elgg_get_excerpt($blog_excerpt, $excerpt_length);
-	
 		$blog_body = "<h4>" . elgg_view("output/url", array("text" => $blog->title, "href" => $blog->getURL(), "trusted" => true)) . "</h4>";
 		$blog_body .= $blog_excerpt;
 	
@@ -75,7 +71,6 @@ if (!empty($blogs)) {
 		}
 	
 		$blog_image = elgg_view("output/url", array("href" => $blog->getURL(), "text" => elgg_view("output/img", array("src" => $blog_image_url, "alt" => $blog->title))));
-	
 		$content .= "<div title='" . htmlspecialchars($blog->title, ENT_QUOTES, 'UTF-8', false) . "'>" . elgg_view_image_block($blog_image, $blog_body) . "</div>";
 	}
 	

@@ -42,8 +42,8 @@ if ($title && $description) {
 		// mark this as a brand new post so we can work out the
 		// river / revision logic in the real save action.
 		$blog->new_post = TRUE;
-		
 		$container_guid = (int)get_input('container_guid');
+
 		if ($container_guid) {
 			$blog->container_guid = $container_guid;
 		}
@@ -57,8 +57,8 @@ if ($title && $description) {
 	if (!$error) {
 		// annotations don't have a "time_updated" so
 		// we have to delete everything or the times are wrong.
-
 		// don't save if nothing changed
+		
 		$auto_save_annotations = $blog->getAnnotations(array(
 			'annotation_name' => 'blog_auto_save',
 			'limit' => 1,

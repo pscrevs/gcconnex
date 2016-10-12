@@ -20,7 +20,6 @@ function blog_tools_remove_blog_icon(ElggBlog $blog) {
 			if (!empty($icon_sizes)) {
 				$fh = new ElggFile();
 				$fh->owner_guid = $blog->getOwnerGUID();
-				
 				$prefix = "blogs/" . $blog->getGUID();
 				
 				foreach ($icon_sizes as $name => $info) {

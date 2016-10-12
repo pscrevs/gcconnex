@@ -37,9 +37,9 @@ if ($widget->show_featured == "yes") {
 $content = elgg_list_entities_from_metadata($options);
 if (!empty($content)) {
 	echo $content;
-	
 	echo "<div class='elgg-widget-more'>";
 	$owner = $widget->getOwnerEntity();
+
 	if (elgg_instanceof($owner, "group")) {
 		echo elgg_view("output/url", array("href" => "blog/group/" . $owner->getGUID() . "/all", "text" => elgg_echo("blog:moreblogs")));
 	} else {

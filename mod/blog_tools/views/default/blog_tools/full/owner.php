@@ -25,7 +25,6 @@ $owner = $entity->getOwnerEntity();
 
 if (!empty($owner) && elgg_instanceof($owner, "user")) {
 	$icon = elgg_view_entity_icon($owner, "medium", array("use_hover" => false));
-	
 	$profile_fields = elgg_get_config("profile_fields");
 	$brief = false;
 	$description = false;
