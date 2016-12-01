@@ -24,11 +24,11 @@ function gcconnex_theme_init() {
 
 // function that handles moving jobs marketplace and micro missions into drop down menu
 function career_menu_hander($hook, $type, $menu, $params){
-/*    foreach ($menu as $key => $item){
+    foreach ($menu as $key => $item){
 
         switch ($item->getName()) {
             case 'career':
-                if(elgg_is_active_plugin('missions')){
+            /*    if(elgg_is_active_plugin('missions')){
                     $item->addChild(elgg_get_menu_item('site', 'mission_main'));
                 }
 				if(elgg_is_active_plugin('gcforums')){
@@ -36,8 +36,8 @@ function career_menu_hander($hook, $type, $menu, $params){
     			}
 			
     			$item->addChild(elgg_get_menu_item('subSite', 'jobs'));
-    			$item->setLinkClass('item');
+    			$item->setLinkClass('item');*/
     			break;
     	}
-	}*/
+	}
 }
