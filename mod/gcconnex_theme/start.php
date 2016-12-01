@@ -24,7 +24,7 @@ function gcconnex_theme_init() {
 
 // function that handles moving jobs marketplace and micro missions into drop down menu
 function career_menu_hander($hook, $type, $menu, $params){
-    foreach ($menu as $key => $item){
+/*    foreach ($menu as $key => $item){
 
         switch ($item->getName()) {
             case 'career':
@@ -39,5 +39,5 @@ function career_menu_hander($hook, $type, $menu, $params){
     			$item->setLinkClass('item');
     			break;
     	}
-	}
+	}*/
 }
