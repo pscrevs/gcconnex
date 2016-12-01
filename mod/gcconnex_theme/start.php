@@ -35,7 +35,7 @@ function career_menu_hander($hook, $type, $menu, $params){
     			        $item->addChild(elgg_get_menu_item('subSite', 'Forum'));
     			}
 			
-    			elgg_get_menu_item('subSite', 'jobs');
+    			$item->addChild(elgg_get_menu_item('subSite', 'career'));
     			$item->setLinkClass('item');
     			break;
     	}
