@@ -6,7 +6,7 @@ elgg_ws_expose_function("get.profile","get_api_profile", array("id" => array('ty
 
 elgg_ws_expose_function("push.profile","profilePush", array("id" => array('type' => 'string'), "data" => array('type'=>'string')),
 	'update a user profile based on id passed',
-               'GET', true, false);
+               'POST', true, false);
 
 function get_api_profile($id){
 	global $CONFIG;
@@ -290,14 +290,17 @@ function profilePush($id, $data){
 	if (json_last_error() !== 0){
 		return "invalid JSON format of data";
 	}
-
+	//error_log(json_encode($userDataObj));
 	/*
 { 
 	"name": {
 		"firstName": "Troy",
 		"lastName": "Lawson"
 	},
-	"title": "GCconnex King",
+	"title": {
+		"en": "GCconnex King",
+		"fr": "le King"
+	},
 	"classification": {
 		"group": "CS",
 		"level": "03"
@@ -363,14 +366,34 @@ function profilePush($id, $data){
 	*
 	*/
 	foreach ($userDataObj as $field => $value){
+		//error_log('in loop');
 		switch($field){
 			case 'name':
+			elgg_set_ignore_access(true);
+			error_log($user_entity->getDisplayName());
 				//error_log(json_encode($value));
 				$nameData = json_decode(json_encode($value), true);
 
 				$name = $nameData["firstName"].' '.$nameData["lastName"];
 				//error_log($name);
-				$user_entity->set('name', $name);
+				//$user_entity->set('name', $name);
+				$owner = get_entity($id);
+				if (elgg_strlen($name) > 50) {
+					register_error(elgg_echo('user:name:fail'));
+
+				} elseif ($owner->name != $name) {
+					error_log($name);
+					
+					//$user_entity->setDisplayName($name);//name = $name;
+					//error_log($user_entity->getDisplayName());
+					//$user_entity->update();
+					
+					$user=get_user($user_entity->guid);
+					$user->name= $name;
+					$user_entity->save();
+					error_log($user_entity->getDisplayName());
+				}
+				elgg_set_ignore_access(false);
 				break;
 			case 'title':
 				//error_log($user_entity->language);
@@ -436,6 +459,7 @@ function profilePush($id, $data){
 				break;
 		}
 	}
+	error_log($user_entity->getDisplayName());
 	$user_entity->save();
 	return 'success';
 }
