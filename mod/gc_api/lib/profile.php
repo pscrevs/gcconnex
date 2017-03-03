@@ -282,14 +282,29 @@ function get_api_profile($id){
 }
 
 function profilePush($id, $data){
+	$response['error'] = 0;
 	$user_entity = getUserFromID($id);
 	if (!$user_entity){
-		return "Not a valid user";
+		$response['error'] = 1;
+		$response['message'] = 'Invalid user id, username, or email';
+		return $response;
+		//return "Not a valid user";
+	}
+	error_log(gettype($data));
+	error_log('value of data: '.$data);
+	if ($data == ''){
+		$response['error'] = 2;
+		$response['message'] = 'data must be a string representing a JSON object.';
+		return $response;
 	}
 	$userDataObj = json_decode($data, true);
 	if (json_last_error() !== 0){
-		return "invalid JSON format of data";
+		$response['error'] = 2;
+		$response['message'] = 'invalid JSON - data was unable to be parsed';
+		return $response;
+		//return "invalid JSON format of data";
 	}
+	
 	//error_log(json_encode($userDataObj));
 	/*
 { 
@@ -445,8 +460,12 @@ function profilePush($id, $data){
 				$user_entity->set('mobile', $value);
 				break;
 			case 'email':
-				//error_log(json_encode($value));
+				error_log(json_encode($value));
+				elgg_set_ignore_access(true);
 				$user_entity->set('email', $value);
+				$user_entity->save();
+				error_log($user_entity->email);
+				elgg_set_ignore_access(false);
 				break;
 			case 'secondLanguage':
 				//error_log(json_encode($value));
