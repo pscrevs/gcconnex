@@ -5,12 +5,12 @@ elgg_register_event_handler('init', 'system', 'gc_fedsearch_gsa_init');
 function gc_fedsearch_gsa_init() {
 	// strip out all the (broken) hyperlink so that the GSA doesn't recursively create indices
 	$gsa_agentstring = strtolower(elgg_get_plugin_setting('gsa_agentstring','gc_fedsearch_gsa'));
-	//if ((!$gsa_usertest) && (strcmp($gsa_agentstring,strtolower($_SERVER['HTTP_USER_AGENT'])) == 0 || 
-	//		strstr(strtolower($_SERVER['HTTP_USER_AGENT']), $gsa_agentstring) !== false )  {
+	if ((!$gsa_usertest) && (strcmp($gsa_agentstring,strtolower($_SERVER['HTTP_USER_AGENT'])) == 0 || 
+			strstr(strtolower($_SERVER['HTTP_USER_AGENT']), $gsa_agentstring) !== false )  {
 
 		elgg_register_plugin_hook_handler('view', 'output/longtext', 'entity_url');
 		elgg_register_plugin_hook_handler('view', 'groups/profile/fields', 'group_url');
-	//}
+	}
 
 	// allow gsa result set to display bilingual titles
 	elgg_register_plugin_hook_handler('view', 'page/elements/title', 'entity_title',1);
@@ -27,11 +27,6 @@ function entity_title($hook, $type, $return, $params) {
 	$entity_title = new DOMDocument();
 	$entity_title->loadHTML($return);
 
-	//error_log(">>>>>>>>>>>>> {$entity_title}");
-	$params["vars"]["title"] = "asdasdsadsad";
-	error_log(">>>>>>>>>>>>>>>> ".$params["vars"]["title"]);	
-	//return $params;
-
 	$filter_entity = array('blog', 'pages', 'discussion', 'file', 'bookmarks');
 	if (!in_array(elgg_get_context(), $filter_entity))
 		return;
@@ -44,7 +39,7 @@ function group_url($hook, $type, $return, $params) {
 		return $params['vars']['entity']->description;
 
 		$url = explode('/',$_SERVER['REQUEST_URI']);
-		$entity = get_entity($url[4]);
+		$entity = get_entity($url[3]);
 
 		// let the gsa index the title of the entity as well
 		foreach ($entity_title->getElementsByTagName('h1')->item(0)->childNodes as $node) 
