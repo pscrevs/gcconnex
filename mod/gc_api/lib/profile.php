@@ -1,15 +1,20 @@
 <?php
 
+//global $CONFIG;
+//error_log($CONFIG->dbhost.' '.$CONFIG->dbuser.' '.$CONFIG->dbpass.' '.$CONFIG->dbname);
+
 elgg_ws_expose_function("get.profile","get_api_profile", array("id" => array('type' => 'string')),
 	'provide user GUID number and all profile information is returned',
                'GET', false, false);
 
-elgg_ws_expose_function("push.profile","profilePush", array("id" => array('type' => 'string'), "data" => array('type'=>'string')),
+elgg_ws_expose_function("profile.update","profileUpdate", array("id" => array('type' => 'string'), "data" => array('type'=>'string')),
 	'update a user profile based on id passed',
                'POST', true, false);
 
+
+
 function get_api_profile($id){
-	global $CONFIG;
+	//global $CONFIG;
 	//$string = "User was not found. Please try a different GUID, username, or email address";
 	$user_entity = getUserFromID($id);
 	if (!$user_entity)
@@ -281,7 +286,8 @@ function get_api_profile($id){
 	return $user;
 }
 
-function profilePush($id, $data){
+function profileUpdate($id, $data){
+	global $CONFIG;
 	$response['error'] = 0;
 	$user_entity = getUserFromID($id);
 	if (!$user_entity){
@@ -290,8 +296,7 @@ function profilePush($id, $data){
 		return $response;
 		//return "Not a valid user";
 	}
-	error_log(gettype($data));
-	error_log('value of data: '.$data);
+	
 	if ($data == ''){
 		$response['error'] = 2;
 		$response['message'] = 'data must be a string representing a JSON object.';
@@ -385,9 +390,22 @@ function profilePush($id, $data){
 		switch($field){
 			case 'name':
 			elgg_set_ignore_access(true);
-			error_log($user_entity->getDisplayName());
+			
 				//error_log(json_encode($value));
 				$nameData = json_decode(json_encode($value), true);
+
+				if (!isset($nameData["firstName"])||!isset($nameData["lastName"])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing first or last name';
+						return $response;
+
+				}
+				if (!isset($nameData["firstName"])&&!isset($nameData["lastName"])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing first or last name';
+						return $response;
+
+				}
 
 				$name = $nameData["firstName"].' '.$nameData["lastName"];
 				//error_log($name);
@@ -397,38 +415,122 @@ function profilePush($id, $data){
 					register_error(elgg_echo('user:name:fail'));
 
 				} elseif ($owner->name != $name) {
-					error_log($name);
-					
-					//$user_entity->setDisplayName($name);//name = $name;
-					//error_log($user_entity->getDisplayName());
-					//$user_entity->update();
-					
+										
 					$user=get_user($user_entity->guid);
 					$user->name= $name;
 					$user_entity->save();
-					error_log($user_entity->getDisplayName());
+					
 				}
 				elgg_set_ignore_access(false);
 				break;
 			case 'title':
-				//error_log($user_entity->language);
-				//error_log(json_encode($value));
-				$langaugeData = json_decode(json_encode($value), true);
+				
+				$titleData = json_decode(json_encode($value), true);
+				if (!isset($titleData['fr'])||!isset($titleData['en'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing french or english title';
+						return $response;
+
+				}
+				if (!isset($titleData['fr'])&&!isset($titleData['en'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing french and english title';
+						return $response;
+
+				}
 				if ($user_entity->language === 'fr'){
-					$user_entity->set('job', $langaugeData['fr'].' / '.$langaugeData['en']);
+					$user_entity->set('job', $titleData['fr'].' / '.$titleData['en']);
 				}
 				else{
-					$user_entity->set('job', $langaugeData['en'].' / '.$langaugeData['fr']);
+					$user_entity->set('job', $titleData['en'].' / '.$titleData['fr']);
 				}
 				
 				break;
 			case 'classification':
 				//error_log(json_encode($value));
+				$classificationData = json_decode(json_encode($value), true);
+				if (!isset($classificationData['group'])||!isset($classificationData['level'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing classification group or level';
+						return $response;
+
+				}
+				if (!isset($classificationData['group'])&&!isset($classificationData['level'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing classification group and level';
+						return $response;
+
+				}
 				$user_entity->set('classification', json_encode($value));
 				break;
 			case 'department':
-				//error_log(json_encode($value));
 				$deptData = json_decode(json_encode($value), true);
+				if (!isset($deptData['fr'])||!isset($deptData['en'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing french or english department';
+						return $response;
+
+				}
+				if (!isset($deptData['fr'])&&!isset($deptData['en'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - department format';
+						return $response;
+
+				}
+
+				$obj = elgg_get_entities(array(
+   					'type' => 'object',
+   					'subtype' => 'dept_list',
+   					'owner_guid' => elgg_get_logged_in_user_guid()
+				));
+				$deptListEn = json_decode($obj[0]->deptsEn, true);
+				$provinces = array();
+				$provinces['pov-alb'] = 'Government of Alberta';
+				$provinces['pov-bc'] = 'Government of British Columbia';
+				$provinces['pov-man'] = 'Government of Manitoba';
+				$provinces['pov-nb'] = 'Government of New Brunswick';
+				$provinces['pov-nfl'] = 'Government of Newfoundland and Labrador';
+				$provinces['pov-ns'] = 'Government of Nova Scotia';
+				$provinces['pov-nwt'] = 'Government of Northwest Territories';
+				$provinces['pov-nun'] = 'Government of Nunavut';
+				$provinces['pov-ont'] = 'Government of Ontario';
+				$provinces['pov-pei'] = 'Government of Prince Edward Island';
+				$provinces['pov-que'] = 'Government of Quebec';
+				$provinces['pov-sask'] = 'Government of Saskatchewan';
+				$provinces['pov-yuk'] = 'Government of Yukon';
+				$deptAndProvincesEn = array_merge($deptListEn,$provinces);
+
+
+				$deptListFr = json_decode($obj[0]->deptsFr, true);
+				$provinces = array();
+				$provinces['pov-alb'] = 'Government of Alberta';
+				$provinces['pov-bc'] = 'Government of British Columbia';
+				$provinces['pov-man'] = 'Government of Manitoba';
+				$provinces['pov-nb'] = 'Government of New Brunswick';
+				$provinces['pov-nfl'] = 'Government of Newfoundland and Labrador';
+				$provinces['pov-ns'] = 'Government of Nova Scotia';
+				$provinces['pov-nwt'] = 'Government of Northwest Territories';
+				$provinces['pov-nun'] = 'Government of Nunavut';
+				$provinces['pov-ont'] = 'Government of Ontario';
+				$provinces['pov-pei'] = 'Government of Prince Edward Island';
+				$provinces['pov-que'] = 'Government of Quebec';
+				$provinces['pov-sask'] = 'Government of Saskatchewan';
+				$provinces['pov-yuk'] = 'Government of Yukon';
+				$deptAndProvincesFr = array_merge($deptListFr,$provinces);
+
+				if(!in_array($deptData['en'], $deptAndProvincesEn)){
+						$response['error'] = 5;
+						$response['message'] = 'invalid english department name. valid names: '.json_encode($deptAndProvincesEn);
+						return $response;
+				}
+
+				if(!in_array($deptData['fr'], $deptAndProvincesFr)){
+						$response['error'] = 5;
+						$response['message'] = 'invalid french department name. valid names: '.json_encode($deptAndProvincesFr);
+						return $response;
+				}
+				//error_log(json_encode($value));
+				
 				if ($user_entity->language === 'fr'){
 					$user_entity->set('department', $deptData['fr'].' / '.$deptData['en']);
 				}
@@ -439,38 +541,133 @@ function profilePush($id, $data){
 
 				break;
 			case 'branch':
-				//error_log(json_encode($value));
+				$branchData = json_decode(json_encode($value), true);
+				if (!isset($branchData['en'])||!isset($branchData['fr'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing english or french branch name';
+						return $response;
+
+				}
+				if (!isset($branchData['en'])&&!isset($branchData['fr'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing english and french branch name';
+						return $response;
+
+				}
+				$user_entity->set('branch', json_encode($value));
 				break;
 			case 'sector':
-				//error_log(json_encode($value));
+				$sectorData = json_decode(json_encode($value), true);
+				if (!isset($sectorData['en'])||!isset($sectorData['fr'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing english or french sector name';
+						return $response;
+
+				}
+				if (!isset($sectorData['en'])&&!isset($sectorData['fr'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid data format - missing english and french sector name';
+						return $response;
+
+				}
+				$user_entity->set('sector', json_encode($value));
 				break;
 			case 'location':
-				//error_log(json_encode($value));
-				//error_log(json_encode($value["en"]));
-				//error_log(json_encode($value["fr"]));
+				if (!isset($value['en'])){
+						$response['error'] = 4;
+						$response['message'] = 'missing english location data';
+						return $response;
+
+				}
+				$locationData = json_decode(json_encode($value['en']), true);
+				if(!isset($locationData['street'])||!isset($locationData['city'])||!isset($locationData['province'])||!isset($locationData['postalCode'])||!isset($locationData['country'])||!isset($locationData['building'])||!isset($locationData['floor'])||!isset($locationData['officeNum'])){
+						$response['error'] = 4;
+						$response['message'] = 'missing location data';
+						return $response;
+				}
+				if(!isset($locationData['street'])&&!isset($locationData['city'])&&!isset($locationData['province'])&&!isset($locationData['postalCode'])&&!isset($locationData['country'])&&!isset($locationData['building'])&&!isset($locationData['floor'])&&!isset($locationData['officeNum'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid location data';
+						return $response;
+				}
+				if (!isset($value['fr'])){
+						$response['error'] = 4;
+						$response['message'] = 'missing french location data';
+						return $response;
+
+				}
+				$locationData = json_decode(json_encode($value['fr']), true);
+				if(!isset($locationData['street'])||!isset($locationData['city'])||!isset($locationData['province'])||!isset($locationData['postalCode'])||!isset($locationData['country'])||!isset($locationData['building'])||!isset($locationData['floor'])||!isset($locationData['officeNum'])){
+						$response['error'] = 4;
+						$response['message'] = 'missing location data';
+						return $response;
+				}
+				if(!isset($locationData['street'])&&!isset($locationData['city'])&&!isset($locationData['province'])&&!isset($locationData['postalCode'])&&!isset($locationData['country'])&&!isset($locationData['building'])&&!isset($locationData['floor'])&&!isset($locationData['officeNum'])){
+						$response['error'] = 4;
+						$response['message'] = 'invalid location data';
+						return $response;
+				}
 				$user_entity->set('addressString', json_encode($value["en"]));
 				$user_entity->set('addressStringFr', json_encode($value["fr"]));
 				break;
 			case 'phone':
-				//error_log(json_encode($value));
+				
 				$user_entity->set('phone', $value);
 				break;
 			case 'mobile':
-				//error_log(json_encode($value));
+				
 				$user_entity->set('mobile', $value);
 				break;
 			case 'email':
-				error_log(json_encode($value));
+				
 				elgg_set_ignore_access(true);
+				$connection = mysqli_connect($CONFIG->dbhost, $CONFIG->dbuser, $CONFIG->dbpass, $CONFIG->dbname)or die(mysqli_error($connection));
+				//error_log($CONFIG->dbhost.' '.$CONFIG->dbuser.' '.$CONFIG->dbpass.' '.$CONFIG->dbname);
+				mysqli_select_db($connection,$CONFIG->dbname);
+				$emaildomain = explode('@',$value);
+				$query = "SELECT count(*) AS num FROM email_extensions WHERE ext ='".$emaildomain[1]."'";
+			
+				$result = mysqli_query($connection, $query)or die(mysqli_error($connection));
+				$result = mysqli_fetch_array($result);
+		
+				$emailgc = explode('.',$emaildomain[1]);
+				$gcca = $emailgc[count($emailgc) - 2] .".".$emailgc[count($emailgc) - 1];
+		
+				mysqli_close($connection);
+
+				$resulting_error = "";
+
+				//if ($toc[0] != 1)
+				//{
+				//throw new RegistrationException(elgg_echo('gcRegister:toc_error'));
+				//	$resulting_error .= elgg_echo('gcRegister:toc_error').'<br/>';
+				//}
+				//error_log('num - '.is_null($result));
+				// if domain doesn't exist in database, check if it's a gc.ca domain
+				if ($result['num'][0] <= 0) 
+				{
+					if ($gcca !== 'gc.ca')
+						//throw new RegistrationException(elgg_echo('gcRegister:email_error'));
+						$resulting_error .= elgg_echo('gcRegister:invalid_email');
+			
+				}
+
+
+				if ($resulting_error !== "")
+				{
+					//throw new RegistrationException($resulting_error);
+					///error_log($resulting_error);
+						$response['error'] = 3;
+						$response['message'] = 'invalid email or email domain - must be a valid Government of Canada email address';
+						return $response;
+				}
 				$user_entity->set('email', $value);
 				$user_entity->save();
-				error_log($user_entity->email);
+				
 				elgg_set_ignore_access(false);
 				break;
 			case 'secondLanguage':
-				//error_log(json_encode($value));
-				//$user->english = $english;
-            	//$user->french = $french;
+				
 				$user_entity->set('english', $value["ENG"]);
 				$user_entity->set('french', $value["FRA"]);
             	$user_entity->set('officialLanguage', $value["firstLanguage"]);
@@ -478,7 +675,7 @@ function profilePush($id, $data){
 				break;
 		}
 	}
-	error_log($user_entity->getDisplayName());
+	
 	$user_entity->save();
 	return 'success';
 }
