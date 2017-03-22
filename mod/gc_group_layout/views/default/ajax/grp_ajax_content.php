@@ -98,6 +98,25 @@ if($sub_type =='related'){ //related groups
         ),
     ));
     elgg_pop_context();
+}else if($sub_type =='event_calendar'){
+elgg_load_library('elgg:event_calendar');
+$num = 7;
+    // Get the upcoming events
+    $start_date = time(); // now
+    $end_date = $start_date + 60*60*24*365*2; // maximum is two years from now
+    $events = event_calendar_get_events_between($start_date, $end_date, false, $num, 0, $group);
+    // If there are any events to view, view them
+    if (is_array($events) && sizeof($events) > 0) {
+
+        foreach(array_slice($events, 0, 7) as $event) {
+            echo elgg_view("object/event_calendar", array('entity' => $event['event']));
+           
+        }
+    }else{
+
+        echo elgg_echo($sub_type2.':none');   
+    }
+
 }else{ //all other content types
     $options = array(
         'type' => 'object',
