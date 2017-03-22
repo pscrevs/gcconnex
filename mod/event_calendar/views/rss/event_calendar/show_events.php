@@ -17,7 +17,7 @@ if ($vars['events']) {
 	$options = array(
 		'count' => $vars['count'],
 		'offset' => 0,
-		'limit' => 15,
+		'limit' => 30,
 		'list_type_toggle' => false,
 		'pagination' => false,
 	);
