@@ -48,6 +48,9 @@ if ($vars['events']) {
 }
 if ($listing_format == 'paged' || $listing_format == 'full') {
 	$vars['events'] = event_calendar_flatten_event_structure($vars['events']);
+        error_log('number event: '.$vars['count']);
+        error_log('title event: '.$vars['events'][1]);
+    error_log( print_r($vars['events'][1], TRUE) );
 		$options = array(
 			'list_class' => 'elgg-list-entity',
 			'full_view' => false,
@@ -55,10 +58,12 @@ if ($listing_format == 'paged' || $listing_format == 'full') {
 			'list_type' => 'listing',
 			'list_type_toggle' => false,
 			'offset' => $vars['offset'],
-			'limit' => $vars['limit'],
+			'limit' => 10,
 			'count' => $vars['count'],
+            'callback' => false,
 
 	);
+
 	$event_list = elgg_view_entity_list($vars['events'], $options);
 
 	$owner = elgg_get_page_owner_entity();
