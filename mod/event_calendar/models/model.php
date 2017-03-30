@@ -771,8 +771,8 @@ function event_calendar_get_entities_from_metadata_between_related($meta_start_n
 
 	if ($all_events) {
 		foreach($all_events as $event) {
-			if (array_key_exists($event->guid, $related_list)
-			&& !array_key_exists($event->guid, $main_list)) {
+			/*if (array_key_exists($event->guid, $related_list)
+			&& !array_key_exists($event->guid, $main_list)) {*/
 				// add to main events
 				$main_events[] = $event;
 			}
