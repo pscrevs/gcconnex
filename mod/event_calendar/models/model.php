@@ -775,7 +775,7 @@ function event_calendar_get_entities_from_metadata_between_related($meta_start_n
 			&& !array_key_exists($event->guid, $main_list)) {*/
 				// add to main events
 				$main_events[] = $event;
-			}
+			//}
 		}
 	}
 	return event_calendar_vsort($main_events, $meta_start_name);
