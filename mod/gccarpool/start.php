@@ -11,6 +11,14 @@ if (get_subtype_id('object', 'blog')) {
 elgg_register_event_handler('init','system','carpool_init');
 
 function carpool_init() {
+
+	$root = dirname(__FILE__);
+
+	// actions
+	$action_path = "$root/actions/";
+	elgg_register_action('gccarpool/driverSave', "$action_path/DriverDataEntry.php");
+
+
 	elgg_register_menu_item('site', array(
 		'name' => 'carpool_init',
 		'text' => elgg_echo('Carpool'),
@@ -33,10 +41,15 @@ function Carpool_page_handler($page) {
 
 	switch ($page[0]) {
 		case "all":
-			include "$pages/form.php";
+			include "$pages/main.php";
 			break;
 
-		
+		case "Driver":
+			include "$pages/temp.php";
+			break;
+		case "Passenger":
+			include "$page/Search.php";
+			break;
 		default:
 			return false;
 	}
